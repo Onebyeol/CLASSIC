@@ -1,6 +1,7 @@
 'use client';
 import { usePlayer } from '@/context/PlayerContext';
 import { CloseIcon } from './icons';
+import TrackTile from './TrackTile';
 
 export default function NowPlayingQueue({ onClose }) {
   const { getContextIds, currentTrackId, findTrack, playContextPlaylistId, playTrack } = usePlayer();
@@ -16,10 +17,7 @@ export default function NowPlayingQueue({ onClose }) {
         <div className="queue-list">
           {queueTracks.map((t) => (
             <button key={t.id} className="queue-row" onClick={() => playTrack(t.id, playContextPlaylistId)}>
-              <div className="tile sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/default-cover.png" alt="" />
-              </div>
+              <TrackTile size="sm" />
               <div className="row-meta">
                 <div className="row-title" style={{ color: t.id === currentTrackId ? 'var(--navy)' : 'var(--text)' }}>{t.title}</div>
                 <div className="row-artist">{t.artist}</div>

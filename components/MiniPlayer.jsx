@@ -1,6 +1,7 @@
 'use client';
 import { usePlayer } from '@/context/PlayerContext';
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon } from './icons';
+import TrackTile from './TrackTile';
 
 export default function MiniPlayer() {
   const { findTrack, currentTrackId, isPlaying, showNowPlaying, playNext, playPrev, togglePlayPause, openNowPlaying } = usePlayer();
@@ -8,10 +9,7 @@ export default function MiniPlayer() {
   if (!track || showNowPlaying) return null;
   return (
     <button className="mini-player" onClick={openNowPlaying}>
-      <div className="tile sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/default-cover.png" alt="" />
-      </div>
+      <TrackTile size="sm" />
       <div className="mini-meta">
         <div className="mini-title">{track.title}</div>
         <div className="mini-artist">{track.artist}</div>

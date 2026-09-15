@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
-import { PlusIcon, DotsIcon } from '../icons';
+import { PlusIcon, DotsIcon, PlaylistsTabIcon } from '../icons';
+import EmptyState from '../EmptyState';
 
 export default function PlaylistsScreen() {
   const { playlists, tracks, playlistMenuFor, togglePlaylistMenu, deletePlaylist, setPlaylistCover, setShowCreatePlaylist, openPlaylistDetail } = usePlayer();
@@ -23,6 +24,11 @@ export default function PlaylistsScreen() {
         <div className="hdr-title">앨범</div>
         <button className="round-btn solid" aria-label="새 재생목록" style={{ marginTop: 6 }} onClick={() => setShowCreatePlaylist(true)}><PlusIcon /></button>
       </div>
+      {playlists.length === 0 && (
+        <div className="list-pad">
+          <EmptyState icon={<PlaylistsTabIcon size={24} />} title="아직 앨범이 없어요" subtitle="오른쪽 위 + 버튼으로 새 앨범을 만들어보세요" />
+        </div>
+      )}
       <div className="list-pad" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {playlists.map((p) => {
           const swatches = p.trackIds.slice(0, 4).map((id) => tracks.find((t) => t.id === id)?.color || '#e5e5ea');

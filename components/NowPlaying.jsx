@@ -4,6 +4,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { formatTime } from '@/lib/constants';
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, RepeatIcon, QueueIcon } from './icons';
 import NowPlayingQueue from './NowPlayingQueue';
+import TrackTile from './TrackTile';
 
 export default function NowPlaying() {
   const { audioRef, findTrack, currentTrackId, isPlaying, repeatMode, closeNowPlaying, playPrev, playNext, togglePlayPause, setRepeatMode } = usePlayer();
@@ -73,8 +74,7 @@ export default function NowPlaying() {
       </div>
       <div className="np-body" ref={bodyRef} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <div className="np-art">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/default-cover.png" alt="" />
+          <TrackTile size="np" />
         </div>
         <div>
           <div className="np-title">{track.title}</div>

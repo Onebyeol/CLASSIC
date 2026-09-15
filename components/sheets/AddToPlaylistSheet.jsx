@@ -3,7 +3,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { CloseIcon, CheckIcon, PlusIcon } from '../icons';
 
 export default function AddToPlaylistSheet() {
-  const { addToPlaylistFor, closeAddToPlaylist, findTrack, tracks, playlists, toggleTrackInPlaylist, setShowCreatePlaylist } = usePlayer();
+  const { addToPlaylistFor, closeAddToPlaylist, findTrack, tracks, playlists, toggleTrackInPlaylist, startCreatePlaylistForTrack } = usePlayer();
   if (!addToPlaylistFor) return null;
   const track = findTrack(addToPlaylistFor);
   return (
@@ -17,7 +17,7 @@ export default function AddToPlaylistSheet() {
           <button className="sheet-close" aria-label="닫기" onClick={closeAddToPlaylist}><CloseIcon /></button>
         </div>
         <div style={{ overflowY: 'auto', flex: 1 }}>
-          <button className="add-pl-cover-row" onClick={() => { closeAddToPlaylist(); setShowCreatePlaylist(true); }}>
+          <button className="add-pl-cover-row" onClick={() => startCreatePlaylistForTrack(addToPlaylistFor)}>
             <div className="add-pl-cover add-pl-cover-new"><PlusIcon size={22} /></div>
             <span className="add-pl-cover-name">새 재생목록 만들기</span>
           </button>

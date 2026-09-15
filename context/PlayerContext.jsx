@@ -46,6 +46,15 @@ export function PlayerProvider({ children }) {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [uploadingCount, setUploadingCount] = useState(0);
+  const [toast, setToast] = useState(null);
+  const toastTimeoutRef = useRef(null);
+
+  const showToast = useCallback((message) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast({ id: Date.now(), message });
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 2600);
+  }, []);
+  useEffect(() => () => { if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current); }, []);
 
   const findTrack = useCallback((id) => tracks.find((t) => t.id === id), [tracks]);
   const findPlaylist = useCallback((id) => playlists.find((p) => p.id === id), [playlists]);
@@ -221,78 +230,141 @@ export function PlayerProvider({ children }) {
         setTracks((prev) => [...prev, uploaded]);
       } catch (err) {
         console.error('[classic-mp3] 업로드 실패:', err.message);
+        showToast(`'${title}' 업로드에 실패했어요`);
       } finally {
         URL.revokeObjectURL(tempUrl);
         setUploadingCount((c) => c - 1);
       }
     });
-  }, []);
+  }, [showToast]);
 
   const deleteTrack = useCallback((id) => {
-    setTracks((prevTracks) => {
-      const track = prevTracks.find((t) => t.id === id);
-      if (track) setTrash((prevTrash) => [...prevTrash, track]);
-      return prevTracks.filter((t) => t.id !== id);
-    });
+    const removedTrack = tracks.find((t) => t.id === id) || null;
+    if (!removedTrack) return;
+    setTracks((prev) => prev.filter((t) => t.id !== id));
+    setTrash((prev) => [...prev, removedTrack]);
     setPlaylists((prev) => prev.map((p) => ({ ...p, trackIds: p.trackIds.filter((tid) => tid !== id) })));
-    setCurrentTrackId((prevId) => {
-      if (prevId === id) {
-        const audio = audioRef.current;
-        if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
-        setIsPlaying(false);
-        setShowNowPlaying(false);
-        return null;
-      }
-      return prevId;
+    if (currentTrackId === id) {
+      const audio = audioRef.current;
+      if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+      setIsPlaying(false);
+      setShowNowPlaying(false);
+      setCurrentTrackId(null);
+    }
+    api.trashTrack(id).catch((err) => {
+      console.error('[classic-mp3] 휴지통 이동 실패:', err.message);
+      setTrash((prev) => prev.filter((t) => t.id !== id));
+      setTracks((prev) => (prev.some((t) => t.id === id) ? prev : [...prev, removedTrack]));
+      showToast('삭제하지 못했어요. 다시 시도해주세요');
     });
-    api.trashTrack(id).catch((err) => console.error('[classic-mp3] 휴지통 이동 실패:', err.message));
-  }, [audioRef]);
+  }, [tracks, currentTrackId, audioRef, showToast]);
 
   const renameTrack = useCallback((id, title) => {
     const trimmed = title.trim();
     if (!trimmed) return;
+    const track = tracks.find((t) => t.id === id);
+    if (!track) return;
+    const prevTitle = track.title;
     setTracks((prev) => prev.map((t) => (t.id === id ? { ...t, title: trimmed } : t)));
-    api.renameTrack(id, trimmed).catch((err) => console.error('[classic-mp3] 이름 변경 실패:', err.message));
-  }, []);
+    api.renameTrack(id, trimmed).catch((err) => {
+      console.error('[classic-mp3] 이름 변경 실패:', err.message);
+      setTracks((prev) => prev.map((t) => (t.id === id ? { ...t, title: prevTitle } : t)));
+      showToast('이름을 변경하지 못했어요');
+    });
+  }, [tracks, showToast]);
 
   const restoreTrack = useCallback((id) => {
-    setTrash((prevTrash) => {
-      const t = prevTrash.find((x) => x.id === id);
-      if (t) setTracks((prevTracks) => [...prevTracks, t]);
-      return prevTrash.filter((x) => x.id !== id);
+    const restored = trash.find((x) => x.id === id) || null;
+    if (!restored) return;
+    setTrash((prev) => prev.filter((x) => x.id !== id));
+    setTracks((prev) => [...prev, restored]);
+    api.restoreTrack(id).catch((err) => {
+      console.error('[classic-mp3] 복원 실패:', err.message);
+      setTracks((prev) => prev.filter((t) => t.id !== id));
+      setTrash((prev) => (prev.some((t) => t.id === id) ? prev : [...prev, restored]));
+      showToast('복원하지 못했어요');
     });
-    api.restoreTrack(id).catch((err) => console.error('[classic-mp3] 복원 실패:', err.message));
-  }, []);
+  }, [trash, showToast]);
 
   const permanentlyDeleteTrack = useCallback((id) => {
+    const removed = trash.find((t) => t.id === id) || null;
     setTrash((prev) => prev.filter((x) => x.id !== id));
-    api.permanentlyDeleteTrack(id).catch((err) => console.error('[classic-mp3] 영구 삭제 실패:', err.message));
-  }, []);
+    api.permanentlyDeleteTrack(id).catch((err) => {
+      console.error('[classic-mp3] 영구 삭제 실패:', err.message);
+      if (removed) setTrash((prev) => (prev.some((t) => t.id === id) ? prev : [...prev, removed]));
+      showToast('영구 삭제하지 못했어요');
+    });
+  }, [trash, showToast]);
 
   const emptyTrash = useCallback(() => {
+    const prevTrash = trash;
     setTrash([]);
     setShowEmptyTrashConfirm(false);
-    api.emptyTrash().catch((err) => console.error('[classic-mp3] 휴지통 비우기 실패:', err.message));
+    api.emptyTrash().catch((err) => {
+      console.error('[classic-mp3] 휴지통 비우기 실패:', err.message);
+      setTrash(prevTrash);
+      showToast('휴지통을 비우지 못했어요');
+    });
+  }, [trash, showToast]);
+
+  const pendingNewPlaylistTrackRef = useRef(null);
+
+  const startCreatePlaylistForTrack = useCallback((trackId) => {
+    pendingNewPlaylistTrackRef.current = trackId;
+    setAddToPlaylistFor(null);
+    setShowCreatePlaylist(true);
+  }, []);
+
+  const closeCreatePlaylist = useCallback(() => {
+    pendingNewPlaylistTrackRef.current = null;
+    setShowCreatePlaylist(false);
   }, []);
 
   const createPlaylist = useCallback(async (name) => {
     const trimmed = name.trim();
     if (!trimmed) return;
     setShowCreatePlaylist(false);
+    const pendingTrackId = pendingNewPlaylistTrackRef.current;
+    pendingNewPlaylistTrackRef.current = null;
     try {
       const created = await api.createPlaylist(trimmed);
-      setPlaylists((prev) => [...prev, created]);
+      let finalPlaylist = created;
+      if (pendingTrackId) {
+        try {
+          await api.addTrackToPlaylist(created.id, pendingTrackId);
+          finalPlaylist = { ...created, trackIds: [pendingTrackId] };
+        } catch (err) {
+          console.error('[classic-mp3] 곡 추가 실패:', err.message);
+          showToast('재생목록은 만들었지만 곡을 추가하지 못했어요');
+        }
+      }
+      setPlaylists((prev) => [...prev, finalPlaylist]);
     } catch (err) {
       console.error('[classic-mp3] 재생목록 생성 실패:', err.message);
+      showToast('재생목록을 만들지 못했어요');
     }
-  }, []);
+  }, [showToast]);
 
   const deletePlaylist = useCallback((id) => {
+    const removedIndex = playlists.findIndex((p) => p.id === id);
+    const removed = removedIndex >= 0 ? playlists[removedIndex] : null;
     setPlaylists((prev) => prev.filter((p) => p.id !== id));
     setPlaylistMenuFor(null);
     if (pushed === 'playlistDetail' && activePlaylistId === id) setPushed(null);
-    api.deletePlaylist(id).catch((err) => console.error('[classic-mp3] 재생목록 삭제 실패:', err.message));
-  }, [pushed, activePlaylistId]);
+    api.deletePlaylist(id).catch((err) => {
+      console.error('[classic-mp3] 재생목록 삭제 실패:', err.message);
+      if (removed) {
+        setPlaylists((prev) => {
+          if (prev.some((p) => p.id === id)) return prev;
+          const next = prev.slice();
+          const at = removedIndex >= 0 && removedIndex <= next.length ? removedIndex : next.length;
+          next.splice(at, 0, removed);
+          return next;
+        });
+      }
+      showToast('재생목록을 삭제하지 못했어요');
+    });
+  }, [playlists, pushed, activePlaylistId, showToast]);
 
   const setPlaylistCover = useCallback(async (id, file) => {
     setPlaylistMenuFor(null);
@@ -301,53 +373,81 @@ export function PlayerProvider({ children }) {
       setPlaylists((prev) => prev.map((p) => (p.id === id ? { ...p, cover } : p)));
     } catch (err) {
       console.error('[classic-mp3] 표지 설정 실패:', err.message);
+      showToast('앨범 표지를 설정하지 못했어요');
     }
-  }, []);
+  }, [showToast]);
 
   const togglePlaylistMenu = useCallback((id) => {
     setPlaylistMenuFor((prev) => (prev === id ? null : id));
   }, []);
 
   const toggleTrackInPlaylist = useCallback((playlistId, trackId) => {
-    let willAdd = false;
-    setPlaylists((prev) => prev.map((p) => {
-      if (p.id !== playlistId) return p;
-      const has = p.trackIds.includes(trackId);
-      willAdd = !has;
-      return { ...p, trackIds: has ? p.trackIds.filter((id) => id !== trackId) : [...p.trackIds, trackId] };
-    }));
+    const playlist = playlists.find((p) => p.id === playlistId);
+    const willAdd = playlist ? !playlist.trackIds.includes(trackId) : true;
+    setPlaylists((prev) => prev.map((p) => (
+      p.id === playlistId
+        ? { ...p, trackIds: willAdd ? [...p.trackIds, trackId] : p.trackIds.filter((id) => id !== trackId) }
+        : p
+    )));
     const call = willAdd ? api.addTrackToPlaylist(playlistId, trackId) : api.removeTrackFromPlaylist(playlistId, trackId);
-    call.catch((err) => console.error('[classic-mp3] 재생목록 트랙 변경 실패:', err.message));
-  }, []);
+    call.catch((err) => {
+      console.error('[classic-mp3] 재생목록 트랙 변경 실패:', err.message);
+      setPlaylists((prev) => prev.map((p) => {
+        if (p.id !== playlistId) return p;
+        const has = p.trackIds.includes(trackId);
+        return { ...p, trackIds: willAdd ? p.trackIds.filter((id) => id !== trackId) : (has ? p.trackIds : [...p.trackIds, trackId]) };
+      }));
+      showToast(willAdd ? '재생목록에 추가하지 못했어요' : '재생목록에서 제거하지 못했어요');
+    });
+  }, [playlists, showToast]);
 
   const removeTrackFromPlaylist = useCallback((playlistId, trackId) => {
+    const playlist = playlists.find((p) => p.id === playlistId);
+    const removedAt = playlist ? playlist.trackIds.indexOf(trackId) : -1;
     setPlaylists((prev) => prev.map((p) => (
       p.id === playlistId ? { ...p, trackIds: p.trackIds.filter((id) => id !== trackId) } : p
     )));
-    api.removeTrackFromPlaylist(playlistId, trackId).catch((err) => console.error('[classic-mp3] 트랙 제거 실패:', err.message));
-  }, []);
+    api.removeTrackFromPlaylist(playlistId, trackId).catch((err) => {
+      console.error('[classic-mp3] 트랙 제거 실패:', err.message);
+      setPlaylists((prev) => prev.map((p) => {
+        if (p.id !== playlistId || p.trackIds.includes(trackId)) return p;
+        const next = p.trackIds.slice();
+        const at = removedAt >= 0 && removedAt <= next.length ? removedAt : next.length;
+        next.splice(at, 0, trackId);
+        return { ...p, trackIds: next };
+      }));
+      showToast('재생목록에서 제거하지 못했어요');
+    });
+  }, [playlists, showToast]);
 
   const reorderLibrary = useCallback((fromIndex, toIndex) => {
     if (searchQuery.trim()) return;
-    setTracks((prev) => {
-      const arr = prev.slice();
-      const [moved] = arr.splice(fromIndex, 1);
-      arr.splice(toIndex, 0, moved);
-      api.reorderTracks(arr.map((t) => t.id)).catch((err) => console.error('[classic-mp3] 순서 저장 실패:', err.message));
-      return arr;
+    const prevOrder = tracks;
+    const arr = tracks.slice();
+    const [moved] = arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, moved);
+    setTracks(arr);
+    api.reorderTracks(arr.map((t) => t.id)).catch((err) => {
+      console.error('[classic-mp3] 순서 저장 실패:', err.message);
+      setTracks(prevOrder);
+      showToast('순서를 저장하지 못했어요');
     });
-  }, [searchQuery]);
+  }, [tracks, searchQuery, showToast]);
 
   const reorderPlaylistTracks = useCallback((playlistId, fromIndex, toIndex) => {
-    setPlaylists((prev) => prev.map((p) => {
-      if (p.id !== playlistId) return p;
-      const ids = p.trackIds.slice();
-      const [moved] = ids.splice(fromIndex, 1);
-      ids.splice(toIndex, 0, moved);
-      api.reorderPlaylistTracks(playlistId, ids).catch((err) => console.error('[classic-mp3] 순서 저장 실패:', err.message));
-      return { ...p, trackIds: ids };
-    }));
-  }, []);
+    const playlist = playlists.find((p) => p.id === playlistId);
+    if (!playlist) return;
+    const prevIds = playlist.trackIds;
+    const ids = prevIds.slice();
+    const [moved] = ids.splice(fromIndex, 1);
+    ids.splice(toIndex, 0, moved);
+    setPlaylists((prev) => prev.map((p) => (p.id === playlistId ? { ...p, trackIds: ids } : p)));
+    api.reorderPlaylistTracks(playlistId, ids).catch((err) => {
+      console.error('[classic-mp3] 순서 저장 실패:', err.message);
+      setPlaylists((prev) => prev.map((p) => (p.id === playlistId ? { ...p, trackIds: prevIds } : p)));
+      showToast('순서를 저장하지 못했어요');
+    });
+  }, [playlists, showToast]);
 
   const openTrackMenu = useCallback((trackId, playlistId) => setTrackMenu({ trackId, playlistId: playlistId || null }), []);
   const closeTrackMenu = useCallback(() => setTrackMenu(null), []);
@@ -402,15 +502,15 @@ export function PlayerProvider({ children }) {
     tracks, playlists, trash,
     currentTrackId, isPlaying, repeatMode, playContextPlaylistId, showNowPlaying,
     eqEnabled, eqPreset, eqBands,
-    showUpload, setShowUpload, showCreatePlaylist, setShowCreatePlaylist,
+    showUpload, setShowUpload, showCreatePlaylist, setShowCreatePlaylist, closeCreatePlaylist,
     trackMenu, addToPlaylistFor, playlistMenuFor, showEmptyTrashConfirm, setShowEmptyTrashConfirm,
     renameTarget, openRename, closeRename, renameTrack,
-    initialLoading, loadError, uploadingCount,
+    initialLoading, loadError, uploadingCount, toast,
     findTrack, findPlaylist, getContextIds,
     selectTab, openTrash, openEqualizer, openPlaylistDetail, back,
     playTrack, togglePlayPause, playNext, playPrev, setRepeatMode, openNowPlaying, closeNowPlaying,
     addFiles, deleteTrack, restoreTrack, permanentlyDeleteTrack, emptyTrash,
-    createPlaylist, deletePlaylist, setPlaylistCover, togglePlaylistMenu,
+    createPlaylist, startCreatePlaylistForTrack, deletePlaylist, setPlaylistCover, togglePlaylistMenu,
     toggleTrackInPlaylist, removeTrackFromPlaylist, reorderLibrary, reorderPlaylistTracks,
     openTrackMenu, closeTrackMenu, openAddToPlaylist, closeAddToPlaylist,
     toggleEqEnabled, applyEqPreset, setEqBand,

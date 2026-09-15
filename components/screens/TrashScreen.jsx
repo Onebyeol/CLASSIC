@@ -1,6 +1,8 @@
 'use client';
 import { usePlayer } from '@/context/PlayerContext';
 import { ChevronLeftIcon, RestoreIcon, TrashIcon } from '../icons';
+import TrackTile from '../TrackTile';
+import EmptyState from '../EmptyState';
 
 export default function TrashScreen() {
   const { trash, back, restoreTrack, permanentlyDeleteTrack, setShowEmptyTrashConfirm } = usePlayer();
@@ -11,19 +13,20 @@ export default function TrashScreen() {
         <div style={{ fontSize: 13, color: 'var(--danger)', cursor: 'pointer' }} onClick={() => setShowEmptyTrashConfirm(true)}>전체 비우기</div>
       </div>
       <div style={{ padding: '8px 20px 100px' }}>
-        <ul>
-          {trash.map((t) => (
-            <li className="track-row" style={{ cursor: 'default' }} key={t.id}>
-              <div className="tile dim">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/default-cover.png" alt="" />
-              </div>
-              <div className="row-meta"><div className="row-title">{t.title}</div><div className="row-artist">{t.artist}</div></div>
-              <button className="icon-btn-32" style={{ color: 'var(--navy)' }} aria-label="복원" onClick={() => restoreTrack(t.id)}><RestoreIcon /></button>
-              <button className="icon-btn-32" style={{ color: 'var(--danger)' }} aria-label="영구 삭제" onClick={() => permanentlyDeleteTrack(t.id)}><TrashIcon size={14} /></button>
-            </li>
-          ))}
-        </ul>
+        {trash.length === 0 ? (
+          <EmptyState icon={<TrashIcon size={22} />} title="휴지통이 비어있어요" subtitle="삭제한 곡이 여기에 보관돼요" />
+        ) : (
+          <ul>
+            {trash.map((t) => (
+              <li className="track-row" style={{ cursor: 'default' }} key={t.id}>
+                <TrackTile dim />
+                <div className="row-meta"><div className="row-title">{t.title}</div><div className="row-artist">{t.artist}</div></div>
+                <button className="icon-btn-32" style={{ color: 'var(--navy)' }} aria-label="복원" onClick={() => restoreTrack(t.id)}><RestoreIcon /></button>
+                <button className="icon-btn-32" style={{ color: 'var(--danger)' }} aria-label="영구 삭제" onClick={() => permanentlyDeleteTrack(t.id)}><TrashIcon size={14} /></button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

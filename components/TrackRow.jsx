@@ -1,6 +1,7 @@
 'use client';
 import { GripIcon, DotsIcon } from './icons';
 import { formatTime } from '@/lib/constants';
+import TrackTile from './TrackTile';
 
 export default function TrackRow({ track, index, isCurrent, showDuration = true, editMode = false, dragStyle, onClick, onMenuClick, onPointerDownHandle }) {
   return (
@@ -8,10 +9,7 @@ export default function TrackRow({ track, index, isCurrent, showDuration = true,
       {editMode && (
         <span className="grip grip-active" onPointerDown={(e) => onPointerDownHandle(e, index)}><GripIcon /></span>
       )}
-      <div className="tile">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/default-cover.png" alt="" />
-      </div>
+      <TrackTile />
       <div className="row-meta">
         <div className="row-title" style={{ color: isCurrent ? 'var(--navy)' : 'var(--text)' }}>{track.title}</div>
         <div className="row-artist">{track.artist}</div>

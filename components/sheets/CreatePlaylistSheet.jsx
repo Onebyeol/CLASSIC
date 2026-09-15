@@ -4,10 +4,10 @@ import { usePlayer } from '@/context/PlayerContext';
 import { CloseIcon } from '../icons';
 
 export default function CreatePlaylistSheet() {
-  const { showCreatePlaylist, setShowCreatePlaylist, createPlaylist } = usePlayer();
+  const { showCreatePlaylist, closeCreatePlaylist, createPlaylist } = usePlayer();
   const [name, setName] = useState('');
   if (!showCreatePlaylist) return null;
-  function close() { setShowCreatePlaylist(false); setName(''); }
+  function close() { closeCreatePlaylist(); setName(''); }
   function confirm() { if (!name.trim()) return; createPlaylist(name); setName(''); }
   const has = name.trim().length > 0;
   return (

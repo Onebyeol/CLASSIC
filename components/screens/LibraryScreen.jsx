@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
 import { useDragReorder } from '@/hooks/useDragReorder';
 import TrackRow from '../TrackRow';
-import { TrashIcon, PlusIcon, SearchIcon } from '../icons';
+import EmptyState from '../EmptyState';
+import { TrashIcon, PlusIcon, SearchIcon, NoteOutlineIcon } from '../icons';
 
 export default function LibraryScreen() {
   const { tracks, searchQuery, setSearchQuery, currentTrackId, playTrack, openTrackMenu, openTrash, setShowUpload, reorderLibrary } = usePlayer();
@@ -40,11 +41,19 @@ export default function LibraryScreen() {
         </div>
       )}
       <div className="list-pad">
-        <ul>
-          {filtered.map((t, i) => (
-            <TrackRow key={t.id} track={t} index={i} isCurrent={t.id === currentTrackId} editMode={editMode} dragStyle={getRowStyle(i)} onClick={() => playTrack(t.id, null)} onMenuClick={() => openTrackMenu(t.id, null)} onPointerDownHandle={onPointerDown} />
-          ))}
-        </ul>
+        {filtered.length === 0 ? (
+          q ? (
+            <EmptyState icon={<SearchIcon />} title="검색 결과가 없어요" subtitle={`'${searchQuery.trim()}'에 대한 곡을 찾을 수 없어요`} />
+          ) : (
+            <EmptyState icon={<NoteOutlineIcon size={24} />} title="아직 등록된 노래가 없어요" subtitle="오른쪽 위 + 버튼으로 MP3를 추가해보세요" />
+          )
+        ) : (
+          <ul>
+            {filtered.map((t, i) => (
+              <TrackRow key={t.id} track={t} index={i} isCurrent={t.id === currentTrackId} editMode={editMode} dragStyle={getRowStyle(i)} onClick={() => playTrack(t.id, null)} onMenuClick={() => openTrackMenu(t.id, null)} onPointerDownHandle={onPointerDown} />
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );
