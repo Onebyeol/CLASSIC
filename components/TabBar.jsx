@@ -9,7 +9,7 @@ export default function TabBar() {
     return 'tab-btn' + (!isPushed && tab === name ? ' active' : '');
   }
   function tabColor(name) {
-    return !isPushed && tab === name ? 'var(--navy)' : 'var(--text-dim)';
+    return !isPushed && tab === name ? 'var(--accent)' : 'var(--text-dim)';
   }
   return (
     <div className="tab-bar">

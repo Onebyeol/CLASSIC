@@ -21,45 +21,47 @@ export default function PlaylistsScreen() {
   return (
     <section className="screen">
       <div className="hdr">
-        <div className="hdr-title">앨범</div>
+        <div>
+          <div className="hdr-title">앨범</div>
+          <div className="hdr-sub">총 {playlists.length}개</div>
+        </div>
         <button className="round-btn solid" aria-label="새 재생목록" style={{ marginTop: 6 }} onClick={() => setShowCreatePlaylist(true)}><PlusIcon /></button>
       </div>
-      {playlists.length === 0 && (
+      {playlists.length === 0 ? (
         <div className="list-pad">
           <EmptyState icon={<PlaylistsTabIcon size={24} />} title="아직 앨범이 없어요" subtitle="오른쪽 위 + 버튼으로 새 앨범을 만들어보세요" />
         </div>
-      )}
-      <div className="list-pad" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {playlists.map((p) => {
-          const swatches = p.trackIds.slice(0, 4).map((id) => tracks.find((t) => t.id === id)?.color || '#e5e5ea');
-          while (swatches.length < 4) swatches.push('#e5e5ea');
-          return (
-            <div className="pl-card-row" key={p.id}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', flex: 1, minWidth: 0 }} onClick={() => openPlaylistDetail(p.id)}>
-                <div className="pl-cover">
+      ) : (
+        <div className="list-pad pl-grid">
+          {playlists.map((p) => {
+            const swatches = p.trackIds.slice(0, 4).map((id) => tracks.find((t) => t.id === id)?.color || 'var(--surface)');
+            while (swatches.length < 4) swatches.push('var(--surface)');
+            return (
+              <div className="pl-card" key={p.id}>
+                <div className="pl-card-cover" onClick={() => openPlaylistDetail(p.id)}>
                   {p.cover ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.cover} alt="" />
                   ) : (
                     <div className="pl-swatches">{swatches.map((c, i) => <div key={i} style={{ background: c }} />)}</div>
                   )}
+                  <button className="pl-card-menu-btn" aria-label="메뉴" onClick={(e) => { e.stopPropagation(); togglePlaylistMenu(p.id); }}><DotsIcon /></button>
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="pl-card-info" onClick={() => openPlaylistDetail(p.id)}>
                   <div className="pl-name">{p.name}</div>
                   <div className="pl-count">{p.trackIds.length}곡</div>
                 </div>
+                {playlistMenuFor === p.id && (
+                  <div className="pl-menu" ref={menuRef}>
+                    <label>앨범 표지 설정<input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleCoverChange(e, p.id)} /></label>
+                    <div className="danger-item" onClick={() => deletePlaylist(p.id)}>재생목록 삭제</div>
+                  </div>
+                )}
               </div>
-              <button className="menu-btn" aria-label="메뉴" onClick={(e) => { e.stopPropagation(); togglePlaylistMenu(p.id); }}><DotsIcon /></button>
-              {playlistMenuFor === p.id && (
-                <div className="pl-menu" ref={menuRef}>
-                  <label>앨범 표지 설정<input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleCoverChange(e, p.id)} /></label>
-                  <div className="danger-item" onClick={() => deletePlaylist(p.id)}>재생목록 삭제</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

@@ -18,7 +18,7 @@ export default function CreatePlaylistSheet() {
           <button className="sheet-close" aria-label="닫기" onClick={close}><CloseIcon /></button>
         </div>
         <input type="text" className="text-input" placeholder="재생목록 이름" value={name} autoFocus onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') confirm(); }} />
-        <button className="confirm-btn" style={{ background: has ? 'var(--navy)' : 'var(--divider)', color: has ? '#fff' : 'var(--text-dim)' }} onClick={confirm}>만들기</button>
+        <button className="confirm-btn" style={{ background: has ? 'var(--accent)' : 'var(--surface-3)', color: has ? 'var(--on-accent)' : 'var(--text-dim)' }} onClick={confirm}>만들기</button>
       </div>
     </div>
   );

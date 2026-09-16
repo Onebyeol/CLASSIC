@@ -15,7 +15,7 @@ function RenameSheetInner({ track, onClose, onSave }) {
           <button className="sheet-close" aria-label="닫기" onClick={onClose}><CloseIcon /></button>
         </div>
         <input type="text" className="text-input" placeholder="곡 제목" value={title} autoFocus onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') confirm(); }} />
-        <button className="confirm-btn" style={{ background: has ? 'var(--navy)' : 'var(--divider)', color: has ? '#fff' : 'var(--text-dim)' }} onClick={confirm}>저장</button>
+        <button className="confirm-btn" style={{ background: has ? 'var(--accent)' : 'var(--surface-3)', color: has ? 'var(--on-accent)' : 'var(--text-dim)' }} onClick={confirm}>저장</button>
       </div>
     </div>
   );

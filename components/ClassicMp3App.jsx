@@ -44,7 +44,7 @@ export default function ClassicMp3App() {
       <div className="app" style={{ alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>연결할 수 없어요</div>
         <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 20, lineHeight: 1.6 }}>{loadError}</div>
-        <button onClick={() => window.location.reload()} style={{ background: 'var(--navy)', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>다시 시도</button>
+        <button onClick={() => window.location.reload()} style={{ background: 'var(--accent)', color: 'var(--on-accent)', border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>다시 시도</button>
       </div>
     );
   }

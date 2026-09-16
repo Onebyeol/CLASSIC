@@ -21,7 +21,7 @@ export default function TrashScreen() {
               <li className="track-row" style={{ cursor: 'default' }} key={t.id}>
                 <TrackTile dim />
                 <div className="row-meta"><div className="row-title">{t.title}</div><div className="row-artist">{t.artist}</div></div>
-                <button className="icon-btn-32" style={{ color: 'var(--navy)' }} aria-label="복원" onClick={() => restoreTrack(t.id)}><RestoreIcon /></button>
+                <button className="icon-btn-32" style={{ color: 'var(--accent)' }} aria-label="복원" onClick={() => restoreTrack(t.id)}><RestoreIcon /></button>
                 <button className="icon-btn-32" style={{ color: 'var(--danger)' }} aria-label="영구 삭제" onClick={() => permanentlyDeleteTrack(t.id)}><TrashIcon size={14} /></button>
               </li>
             ))}

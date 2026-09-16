@@ -9,14 +9,14 @@ export default function EqualizerScreen() {
     <section className="screen">
       <div className="push-hdr">
         <div className="back-row"><button className="back-btn" aria-label="뒤로" onClick={back}><ChevronLeftIcon /></button><div className="push-title">이퀄라이저</div></div>
-        <button className="eq-toggle" aria-label="이퀄라이저 켜기/끄기" style={{ background: eqEnabled ? 'var(--navy)' : 'var(--divider)' }} onClick={toggleEqEnabled}>
+        <button className="eq-toggle" aria-label="이퀄라이저 켜기/끄기" style={{ background: eqEnabled ? 'var(--accent)' : 'var(--surface-3)' }} onClick={toggleEqEnabled}>
           <span className="eq-toggle-thumb" style={{ left: eqEnabled ? 21 : 2 }} />
         </button>
       </div>
       <div className="eq-chip-row">
         {Object.keys(EQ_PRESETS).map((name) => {
           const active = name === eqPreset;
-          return (<button key={name} className="eq-chip" style={{ background: active ? 'var(--navy)' : 'var(--white)', color: active ? '#fff' : 'var(--text)' }} onClick={() => applyEqPreset(name)}>{name}</button>);
+          return (<button key={name} className="eq-chip" style={{ background: active ? 'var(--accent)' : 'var(--surface)', color: active ? 'var(--on-accent)' : 'var(--text)' }} onClick={() => applyEqPreset(name)}>{name}</button>);
         })}
       </div>
       <div className="eq-panel" style={{ opacity: eqEnabled ? 1 : 0.4, pointerEvents: eqEnabled ? 'auto' : 'none' }}>

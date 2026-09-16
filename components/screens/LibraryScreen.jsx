@@ -7,7 +7,7 @@ import EmptyState from '../EmptyState';
 import { TrashIcon, PlusIcon, SearchIcon, NoteOutlineIcon } from '../icons';
 
 export default function LibraryScreen() {
-  const { tracks, searchQuery, setSearchQuery, currentTrackId, playTrack, openTrackMenu, openTrash, setShowUpload, reorderLibrary } = usePlayer();
+  const { tracks, searchQuery, setSearchQuery, currentTrackId, isPlaying, playTrack, openTrackMenu, openTrash, setShowUpload, reorderLibrary } = usePlayer();
   const [editMode, setEditMode] = useState(false);
   const { onPointerDown, getRowStyle } = useDragReorder(tracks.length, reorderLibrary);
   const q = searchQuery.trim().toLowerCase();
@@ -50,7 +50,7 @@ export default function LibraryScreen() {
         ) : (
           <ul>
             {filtered.map((t, i) => (
-              <TrackRow key={t.id} track={t} index={i} isCurrent={t.id === currentTrackId} editMode={editMode} dragStyle={getRowStyle(i)} onClick={() => playTrack(t.id, null)} onMenuClick={() => openTrackMenu(t.id, null)} onPointerDownHandle={onPointerDown} />
+              <TrackRow key={t.id} track={t} index={i} isCurrent={t.id === currentTrackId} isPlaying={isPlaying} editMode={editMode} dragStyle={getRowStyle(i)} onClick={() => playTrack(t.id, null)} onMenuClick={() => openTrackMenu(t.id, null)} onPointerDownHandle={onPointerDown} />
             ))}
           </ul>
         )}

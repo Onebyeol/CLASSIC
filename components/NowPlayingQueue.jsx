@@ -4,7 +4,7 @@ import { CloseIcon } from './icons';
 import TrackTile from './TrackTile';
 
 export default function NowPlayingQueue({ onClose }) {
-  const { getContextIds, currentTrackId, findTrack, playContextPlaylistId, playTrack } = usePlayer();
+  const { getContextIds, currentTrackId, isPlaying, findTrack, playContextPlaylistId, playTrack } = usePlayer();
   const ids = getContextIds();
   const queueTracks = ids.map((id) => findTrack(id)).filter(Boolean);
   return (
@@ -17,9 +17,9 @@ export default function NowPlayingQueue({ onClose }) {
         <div className="queue-list">
           {queueTracks.map((t) => (
             <button key={t.id} className="queue-row" onClick={() => playTrack(t.id, playContextPlaylistId)}>
-              <TrackTile size="sm" />
+              <TrackTile size="sm" playing={t.id === currentTrackId} active={t.id === currentTrackId && isPlaying} />
               <div className="row-meta">
-                <div className="row-title" style={{ color: t.id === currentTrackId ? 'var(--navy)' : 'var(--text)' }}>{t.title}</div>
+                <div className="row-title" style={{ color: t.id === currentTrackId ? 'var(--accent)' : 'var(--text)' }}>{t.title}</div>
                 <div className="row-artist">{t.artist}</div>
               </div>
             </button>

@@ -23,8 +23,8 @@ export default function AddToPlaylistSheet() {
           </button>
           {playlists.map((p) => {
             const has = p.trackIds.includes(addToPlaylistFor);
-            const swatches = p.trackIds.slice(0, 4).map((id) => tracks.find((t) => t.id === id)?.color || '#e5e5ea');
-            while (swatches.length < 4) swatches.push('#e5e5ea');
+            const swatches = p.trackIds.slice(0, 4).map((id) => tracks.find((t) => t.id === id)?.color || 'var(--surface)');
+            while (swatches.length < 4) swatches.push('var(--surface)');
             return (
               <button key={p.id} className="add-pl-cover-row" onClick={() => toggleTrackInPlaylist(p.id, addToPlaylistFor)}>
                 <div className="add-pl-cover">

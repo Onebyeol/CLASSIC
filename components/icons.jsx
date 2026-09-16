@@ -17,7 +17,7 @@ export function NextIcon({ size = 18 }) {
   return (<svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor"><polygon points="4,4 16,12 4,20"></polygon><rect x="17" y="4" width="3" height="16"></rect></svg>);
 }
 export function GripIcon() {
-  return (<svg viewBox="0 0 24 24" width="15" height="15" fill="#c7c7cc"><circle cx="8" cy="6" r="1.4"></circle><circle cx="16" cy="6" r="1.4"></circle><circle cx="8" cy="12" r="1.4"></circle><circle cx="16" cy="12" r="1.4"></circle><circle cx="8" cy="18" r="1.4"></circle><circle cx="16" cy="18" r="1.4"></circle></svg>);
+  return (<svg viewBox="0 0 24 24" width="15" height="15" fill="#7d8494"><circle cx="8" cy="6" r="1.4"></circle><circle cx="16" cy="6" r="1.4"></circle><circle cx="8" cy="12" r="1.4"></circle><circle cx="16" cy="12" r="1.4"></circle><circle cx="8" cy="18" r="1.4"></circle><circle cx="16" cy="18" r="1.4"></circle></svg>);
 }
 export function DotsIcon() {
   return (<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>);
@@ -29,16 +29,16 @@ export function TrashIcon({ size = 16 }) {
   return (<svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 14h10l1-14"></path></svg>);
 }
 export function CheckIcon() {
-  return (<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#1f3a5f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>);
+  return (<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#c8ff4d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>);
 }
 export function PlusIcon({ size = 18 }) {
   return (<svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"></path></svg>);
 }
 export function SearchIcon() {
-  return (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8a8a8e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35"></path></svg>);
+  return (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9aa1ad" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35"></path></svg>);
 }
 export function ChevronRightIcon() {
-  return (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c7c7cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>);
+  return (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5b6270" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>);
 }
 export function ChevronLeftIcon({ size = 22 }) {
   return (<svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>);
