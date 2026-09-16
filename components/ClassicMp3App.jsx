@@ -17,7 +17,6 @@ import RenameSheet from './sheets/RenameSheet';
 import AddToPlaylistSheet from './sheets/AddToPlaylistSheet';
 import EmptyTrashConfirmDialog from './sheets/EmptyTrashConfirmDialog';
 import Toast from './Toast';
-import ViewportDebug from './ViewportDebug';
 
 const SCREENS = { library: LibraryScreen, playlists: PlaylistsScreen, settings: SettingsScreen, trash: TrashScreen, equalizer: EqualizerScreen, playlistDetail: PlaylistDetailScreen };
 
@@ -35,7 +34,6 @@ export default function ClassicMp3App() {
   if (initialLoading) {
     return (
       <div className="app" style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <ViewportDebug />
         <div style={{ color: 'var(--text-dim)', fontSize: 14 }}>불러오는 중…</div>
         {showSlowHint && <div style={{ color: 'var(--text-faint)', fontSize: 12, marginTop: 10, textAlign: 'center', padding: '0 32px', lineHeight: 1.6 }}>연결을 확인하고 있어요</div>}
       </div>
@@ -52,7 +50,6 @@ export default function ClassicMp3App() {
   }
   return (
     <div className="app">
-      <ViewportDebug />
       <div className="scroll-area">
         <div key={currentScreen} className={pushed ? 'screen-enter-push' : 'screen-enter-tab'}>
           <ScreenComponent />
