@@ -36,7 +36,7 @@ svg{ display:block; }
 @keyframes cmToastIn{ from{ opacity:0; transform:translate(-50%,8px); } to{ opacity:1; transform:translate(-50%,0); } }
 @keyframes cmPopIn{ from{ opacity:0; transform:scale(0.92); } to{ opacity:1; transform:scale(1); } }
 
-.app{ position:relative; width:100%; max-width:480px; height:100vh; height:100dvh; margin:0 auto; background:var(--card-bg); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px rgba(0,0,0,0.6); }
+.app{ position:relative; width:100%; max-width:480px; height:100vh; height:100dvh; height:-webkit-fill-available; margin:0 auto; background:var(--card-bg); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px rgba(0,0,0,0.6); }
 .scroll-area{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior-y:contain; position:relative; -webkit-overflow-scrolling:touch; }
 .screen{ display:flex; flex-direction:column; min-height:100%; }
 .screen-enter-push{ animation:cmSlideIn .22s cubic-bezier(.32,.72,0,1); }
